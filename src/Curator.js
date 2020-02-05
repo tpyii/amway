@@ -13,6 +13,7 @@ class Curator extends React.Component {
         instagram: '',
         region: '',
         structure: '',
+        terms: '',
       },
 
       validate: {
@@ -23,6 +24,7 @@ class Curator extends React.Component {
         instagram: '',
         region: '',
         structure: '',
+        terms: '',
       },
 
       messages: {
@@ -33,13 +35,14 @@ class Curator extends React.Component {
   }
 
   checkValueValidation = event => {
-    const {name, value} = event.target;
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    const name = event.target.name;
     let regexp;
     let validate;
 
     switch(name) {
       case 'name':
-        regexp = /^[А-Яа-яЁё ]+$/;
+        regexp = /^[А-Яа-яЁёa-zA-Z ]+$/;
         validate = regexp.test(value.trim());
         break;
 
@@ -74,13 +77,18 @@ class Curator extends React.Component {
                     value.trim().length > 0 :
                     '';
         break;
+
+      case 'trems':
+        validate = value;
+        break;
     }
 
     return validate;
   }
 
   hundleInputChange = event => {
-    const {name, value} = event.target;
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    const name = event.target.name;
     const validate = this.checkValueValidation(event);
 
     this.setState({
@@ -93,6 +101,8 @@ class Curator extends React.Component {
         [name]: validate
       }
     });
+
+    console.log(this.state)
   }
 
   hundleOnSubmit = event => {
@@ -102,7 +112,7 @@ class Curator extends React.Component {
       body: JSON.stringify(this.state.values)
     }
 
-    fetch('/app/v1/curators', options)
+    fetch('/v1/curators', options)
       .then(response => response.json())
       .then(result => {
         if(result.errors) {
@@ -134,6 +144,10 @@ class Curator extends React.Component {
     return (
       <>
         <h1>Куратор</h1>
+        <p>Уважаемые Партнеры!</p>
+        <p>Для регистрации в активации «Лучший Куратор программы Body Detox» введите, пожалуйста, ваши данные. Обращаем ваше внимание, что поля, отмеченные звездочкой, обязательны к заполнению.</p>
+        <p>Внимание! Адрес электронной почты должен быть действующим, так как после отправки данных, вам на почту придет Номер Куратора и Ссылка на заполнение участников вашего марафона.</p>
+        
         {success.length ? 
           <Message message={success[0]} /> :
           <CuratorForm curator={this} />}
@@ -159,7 +173,7 @@ function CuratorForm({curator}) {
     >
 
       <Form.Group controlId="name">
-        <Form.Label>Введите Фамилию Имя Отчество *</Form.Label>
+        <Form.Label>Фамилия Имя Отчество *</Form.Label>
         <Form.Control 
           required
           type="text"
@@ -170,12 +184,12 @@ function CuratorForm({curator}) {
           isInvalid={curator.state.validate.name === false || curator.state.validate.name.length}
         />
         <Form.Control.Feedback type="invalid">
-          {curator.state.validate.name.length ? curator.state.validate.name : 'Допустимы только кириллические буквы и пробел'}
+          {curator.state.validate.name.length ? curator.state.validate.name : 'Не корректно введены данные'}
         </Form.Control.Feedback>
       </Form.Group>
 
       <Form.Group controlId="partner">
-        <Form.Label>Введите Ваш номер Партнера *</Form.Label>
+        <Form.Label>Ваш номер Партнера *</Form.Label>
         <Form.Control 
           required
           type="number"
@@ -191,7 +205,7 @@ function CuratorForm({curator}) {
       </Form.Group>
 
       <Form.Group controlId="email">
-        <Form.Label>Введите адрес электронной почты *</Form.Label>
+        <Form.Label>Адрес электронной почты *</Form.Label>
         <Form.Control 
           required
           type="email"
@@ -207,7 +221,7 @@ function CuratorForm({curator}) {
       </Form.Group>
 
       <Form.Group controlId="phone">
-        <Form.Label>Введите номер вашего телефона *</Form.Label>
+        <Form.Label>Номер вашего телефона *</Form.Label>
         <Form.Control 
           required
           type="number"
@@ -223,7 +237,7 @@ function CuratorForm({curator}) {
       </Form.Group>
 
       <Form.Group controlId="instagram">
-        <Form.Label>Введите Ваш адрес в Инстаграм для проведения марафона</Form.Label>
+        <Form.Label>Ваш адрес в Инстаграм</Form.Label>
         <InputGroup>
           <InputGroup.Prepend>
             <InputGroup.Text>@</InputGroup.Text>
@@ -290,6 +304,25 @@ function CuratorForm({curator}) {
         <Form.Control.Feedback type="invalid">
             {curator.state.validate.structure.length ? curator.state.validate.structure : 'Выберите значение из списка'}
           </Form.Control.Feedback>
+      </Form.Group>
+
+      <Form.Group controlId="terms">
+        <Form.Check
+          required
+          name="terms"
+          label="Настоящим я, даю согласие ООО &quot;Амвэй&quot; (г. Москва, ул. Верхняя Красносельская д.3, стр.2) на
+          обработку моих персональных данных, указанных в настоящей анкете, а именно на сбор, запись,
+          систематизацию, в автоматизированном формате для следующих дополнительных целей: ведение
+          отчетности по активации «Лучший Куратор программы Body Detox».
+          Мои персональные данные не будут более использоваться ООО &quot;Амвэй&quot; для указанных с настоящем
+          согласии целей после их достижения. Во всем, что не указано в настоящем соглашении ООО &quot;Амвэй&quot;
+          будет руководствоваться Положением об обработке персональных данных Независимых
+          Предпринимателей Amway и Клиентов ООО &quot;Амвэй&quot;. Мое согласие может быть отозвано в любое
+          время путем направления заявления на юридический адрес ООО &quot;Амвэй&quot;."
+          onChange={curator.hundleInputChange}
+          isValid={curator.state.validate.trems === true}
+          isInvalid={curator.state.validate.trems === false}
+        />
       </Form.Group>
 
       <Button 

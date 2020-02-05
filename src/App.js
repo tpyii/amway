@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container } from 'react-bootstrap';
 import Curator from './Curator';
 import Member from './Member';
-import Report from './Report';
 
 class App extends React.Component {
   constructor(props) {
@@ -16,13 +15,14 @@ class App extends React.Component {
     return (
       <Container>
         <Switch>
-          <Route exact path='/app'>
+          <Route exact path='/'>
             <Curator />
           </Route>
-          <Route exact path='/app/curator/:curatorId' component={Member} />
-          <Route exact path='/app/curator/:curatorId/member/:memberId' component={Report} />
+          <Route path="/members">
+            <Member />
+          </Route>
           <Route>
-            <Redirect to='/app' />
+            <Redirect to='/' />
           </Route>
         </Switch>
       </Container>
