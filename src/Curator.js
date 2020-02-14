@@ -113,6 +113,9 @@ class Curator extends React.Component {
     event.preventDefault();
     const options = {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(this.state.values)
     }
 
@@ -156,7 +159,8 @@ function Message() {
   return (
     <>
       <h3>Спасибо!</h3>
-      <p>Ваше сообщение отправлено.</p>
+      <p>Вы зарегистрированы!<br/>
+         На Вашу почту отправлен номер Куратора и ссылка на регистрацию участников.</p>
     </>
   )
 }
@@ -165,8 +169,9 @@ function CuratorForm({curator}) {
   return (
     <>
       <h1>Куратор</h1>
-      <p>Уважаемые Партнеры!</p>
-      <p>Для регистрации в активации «Лучший Куратор программы Body Detox» введите, пожалуйста, ваши данные. Обращаем ваше внимание, что поля, отмеченные звездочкой, обязательны к заполнению.</p>
+      <p>Уважаемые Партнеры!<br/>
+         Для регистрации в активации «Лучший Куратор программы Body Detox» введите, пожалуйста, ваши данные.<br/>
+         Обращаем ваше внимание, что поля, отмеченные звездочкой, обязательны к заполнению.</p>
       <p>Внимание! Адрес электронной почты должен быть действующим, так как после отправки данных, вам на почту придет Номер Куратора и Ссылка на заполнение участников вашего марафона.</p>
 
       <form 
@@ -285,7 +290,7 @@ function CuratorForm({curator}) {
         </Form.Group>
 
         <Form.Group controlId="structure">
-          <Form.Label>Выберите Вашу структуру</Form.Label>
+          <Form.Label>Выберите Вашу обучающую систему</Form.Label>
           <Form.Control 
             as="select"
             type="text"
@@ -296,13 +301,12 @@ function CuratorForm({curator}) {
             isInvalid={curator.state.validate.structure === false || curator.state.validate.structure.length}
           >
             <option></option>
-            <option>DIAMOND ALLIANCE</option>
+            <option>Alga Diamond</option>
+            <option>Diamond Alliance</option>
             <option>Network21</option>
-            <option>WWD</option>
-            <option>DA</option>
+            <option>Sodruzhestvo</option>
             <option>Yager</option>
-            <option>SCHWARZ</option>
-            <option>Содружество</option>
+            <option>Без обучающей системы</option>
           </Form.Control>
           <Form.Control.Feedback type="invalid">
               {curator.state.validate.structure.length ? curator.state.validate.structure : 'Выберите значение из списка'}
@@ -332,7 +336,9 @@ function CuratorForm({curator}) {
         <Button 
           variant="primary"
           type="submit"
-          disabled={curator.checkDisabledSubmit()}>
+          disabled={curator.checkDisabledSubmit()}
+          className="mb-3"
+        >
           Отправить
         </Button>
 
