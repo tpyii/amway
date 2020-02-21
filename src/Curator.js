@@ -28,6 +28,8 @@ class Curator extends React.Component {
       },
 
       success: false,
+
+      id: '',
     };
   }
 
@@ -138,29 +140,33 @@ class Curator extends React.Component {
         }
 
         this.setState({
-          success: result.success
+          success: result.success,
+          id: result.id,
         })
       });
   }
 
   render() {
-    const { success } = this.state;
+    const { success, id } = this.state;
     return (
       <>
         {success === true ? 
-          <Message /> :
+          <Message id={id} /> :
           <CuratorForm curator={this} />}
       </>
     )
   }
 }
 
-function Message() {
+function Message({id}) {
   return (
     <>
       <h3>Спасибо!</h3>
       <p>Вы зарегистрированы!<br/>
-         На Вашу почту отправлен номер Куратора и ссылка на регистрацию участников.</p>
+        Ваш номер Куратора {id}.</p>
+      <p>Ссылка для добавление участников:<br/>
+      <a href="promo.nutrilitebodydetox.ru/members">promo.nutrilitebodydetox.ru/members</a></p>
+      <p>На Вашу почту отправлен номер Куратора и ссылка на регистрацию участников.</p>
     </>
   )
 }
