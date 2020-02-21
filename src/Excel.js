@@ -23,7 +23,10 @@ class Excel extends React.Component {
       validate: {
         login: '',
         password: '',
-      }
+      },
+
+      fetchCurators: false,
+      fetchMembers: false,
     }
   }
 
@@ -95,7 +98,8 @@ class Excel extends React.Component {
               
         else {
           this.setState({
-            curators: result
+            curators: result,
+            fetchCurators: true,
           })
           return;
         }
@@ -111,7 +115,8 @@ class Excel extends React.Component {
               
         else {
           this.setState({
-            members: result
+            members: result,
+            fetchMembers: true,
           })
           return;
         }
@@ -123,7 +128,7 @@ class Excel extends React.Component {
       <>
         {this.state.auth === false ?
           <Auth excel={this} /> :
-          !this.state.curators.length || !this.state.members.length ? 
+          !this.state.fetchCurators || !this.state.fetchMembers ? 
             <Loading /> :
             <Download excel={this}/>}
       </>
