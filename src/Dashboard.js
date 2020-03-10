@@ -163,8 +163,52 @@ class Dashboard extends React.Component {
       });
   }
 
-  hundleOnSubmitModel = event => {
+  hundleOnSubmitMember = event => {
+    event.preventDefault();
+    const body = this.state.modalMemberValues.type !== 'Незарегистрированный клиент' ? 
+                                                        this.state.modalMemberValues :
+                                                        {...this.state.modalMemberValues, number: ''}
+    const options = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body)
+    }
 
+    fetch('/v1/members', options)
+      .then(response => response.json())
+      .then(result => {
+        if(result.error) {
+          console.log(result.error);
+          return;
+        }
+
+        if(result.validate) {
+          this.setState({
+            modalMemberValidate : {
+              ...this.state.modalMemberValidate,
+              ...result.validate
+            }
+          })
+          return;
+        }
+
+        if(result.success) {
+          const newMembers = this.state.members.map(member => {
+            if(member.id === this.state.modalMemberValues.id)
+              member = this.state.modalMemberValues
+
+            return member;
+          })
+
+          this.setState({
+            members: newMembers
+          })
+
+          this.handleToggleModal('member', false);
+        }
+      });
   }
 
   hundleInputChangeModalAuth = event => {
@@ -195,6 +239,23 @@ class Dashboard extends React.Component {
       },
       modalCuratorValidate: {
         ...this.state.modalCuratorValidate,
+        [name]: validate
+      }
+    });
+  }
+
+  hundleInputChangeModalMember = event => {
+    const value = event.target.value;
+    const name = event.target.name;
+    const validate = this.checkValueValidation(event);
+
+    this.setState({
+      modalMemberValues: {
+        ...this.state.modalMemberValues,
+        [name]: value
+      },
+      modalMemberValidate: {
+        ...this.state.modalMemberValidate,
         [name]: validate
       }
     });
@@ -272,6 +333,23 @@ class Dashboard extends React.Component {
             this.state.modalCuratorValidate.instagram === false || this.state.modalCuratorValidate.instagram.length || !this.state.modalCuratorValues.instagram.trim().length ||
             this.state.modalCuratorValidate.region === false || this.state.modalCuratorValidate.region.length || !this.state.modalCuratorValues.region.trim().length ||
             this.state.modalCuratorValidate.structure === false
+  }
+
+  checkDisabledSubmitMember = () => {
+    const curator = this.state.modalMemberValidate.curator_id === false || this.state.modalMemberValidate.curator_id.length || !this.state.modalMemberValues.curator_id.trim().length
+           
+    let member = false;
+
+    if(this.state.modalMemberValidate.name === false || this.state.modalMemberValidate.name.length || !this.state.modalMemberValues.name.trim().length ||
+        this.state.modalMemberValidate.type === false || this.state.modalMemberValidate.type.length || !this.state.modalMemberValues.type.trim().length)
+        member = true;
+
+    if(this.state.modalMemberValues.type !== 'Незарегистрированный клиент') {
+      if(this.state.modalMemberValidate.number === false || this.state.modalMemberValidate.number.length || !this.state.modalMemberValues.number.trim().length)
+        member = true;
+    }
+
+    return curator || member;
   }
 
   checkDisabledSubmitAuth = () => {
@@ -467,7 +545,7 @@ function TableCurators({dashboard}) {
         </tr>
       </thead>
       <tbody>
-        {tbody.length && tbody}
+        {tbody.length ? tbody : ''}
       </tbody>
     </Table>
   )
@@ -496,7 +574,7 @@ function TableMembers({dashboard}) {
         </tr>
       </thead>
       <tbody>
-        {tbody.length && tbody}
+        {tbody.length ? tbody : ''}
       </tbody>
     </Table>
   )
@@ -677,12 +755,97 @@ function ModalMembers({dashboard}) {
       </Modal.Header>
       <Modal.Body>
 
+      <form 
+        noValidate
+        onSubmit={dashboard.hundleOnSubmitMember}
+      >
+
+        <Form.Group controlId="curator_id">
+          <Form.Label>Номер Куратора, присланный по почте *</Form.Label>
+          <Form.Control 
+            required
+            type="number"
+            name="curator_id"
+            value={dashboard.state.modalMemberValues.curator_id}
+            onChange={dashboard.hundleInputChangeModalMember}
+            isValid={dashboard.state.modalMemberValidate.curator_id === true}
+            isInvalid={dashboard.state.modalMemberValidate.curator_id === false || dashboard.state.modalMemberValidate.curator_id.length}
+          />
+          <Form.Control.Feedback type="invalid">
+            {dashboard.state.modalMemberValidate.curator_id.length ? dashboard.state.modalMemberValidate.curator_id : 'Допустимы только цифры'}
+          </Form.Control.Feedback>
+        </Form.Group>
+
+        <Form.Group controlId="name">
+          <Form.Label>Фамилия Имя Отчество участника *</Form.Label>
+          <Form.Control 
+            required
+            type="text"
+            name="name"
+            value={dashboard.state.modalMemberValues.name}
+            onChange={dashboard.hundleInputChangeModalMember}
+            isValid={dashboard.state.modalMemberValidate.name === true}
+            isInvalid={dashboard.state.modalMemberValidate.name === false || dashboard.state.modalMemberValidate.name.length}
+          />
+          <Form.Control.Feedback type="invalid">
+            {dashboard.state.modalMemberValidate.name.length ? dashboard.state.modalMemberValidate.name : 'Некорректно введены данные'}
+          </Form.Control.Feedback>
+        </Form.Group>
+
+        <Form.Group controlId="type">
+          <Form.Label>Тип Участника *</Form.Label>
+          <Form.Control 
+            as="select"
+            required
+            type="text"
+            name="type"
+            value={dashboard.state.modalMemberValues.type}
+            onChange={dashboard.hundleInputChangeModalMember}
+            isValid={dashboard.state.modalMemberValidate.type === true}
+            isInvalid={dashboard.state.modalMemberValidate.type === false || dashboard.state.modalMemberValidate.type.length}
+          >
+            <option></option>
+            <option>Незарегистрированный клиент</option>
+            <option>Зарегистрированный клиент</option>
+            <option>Партнер</option>
+          </Form.Control>
+          <Form.Control.Feedback type="invalid">
+            {dashboard.state.modalMemberValidate.type.length ? dashboard.state.modalMemberValidate.type : 'Выберите значение из списка'}
+          </Form.Control.Feedback>
+        </Form.Group>
+
+        {dashboard.state.modalMemberValues.type !== 'Незарегистрированный клиент' && dashboard.state.modalMemberValues.type !== '' && (
+          <Form.Group controlId="number">
+            <Form.Label>Номер (для Зарегистрированного клиента и Партнера) *</Form.Label>
+            <Form.Control 
+              type="number"
+              name="number"
+              value={dashboard.state.modalMemberValues.number}
+              onChange={dashboard.hundleInputChangeModalMember}
+              isValid={dashboard.state.modalMemberValidate.number === true}
+              isInvalid={dashboard.state.modalMemberValidate.number === false || dashboard.state.modalMemberValidate.number.length}
+            />
+            <Form.Control.Feedback type="invalid">
+              {dashboard.state.modalMemberValidate.number.length ? dashboard.state.modalMemberValidate.number : 'Допустимы только цифры'}
+            </Form.Control.Feedback>
+          </Form.Group>
+        )}
+
+      </form>
+
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => dashboard.handleToggleModal('member', false)}>
+        <Button 
+          variant="secondary" 
+          onClick={() => dashboard.handleToggleModal('member', false)}
+        >
           Отмена
         </Button>
-        <Button variant="primary" onClick={dashboard.hundleOnSubmitModel}>
+        <Button 
+          variant="primary" 
+          onClick={dashboard.hundleOnSubmitMember}
+          disabled={dashboard.checkDisabledSubmitMember()}
+        >
           Сохранить
         </Button>
       </Modal.Footer>
