@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container } from 'react-bootstrap';
 import Curator from './Curator';
 import Member from './Member';
-import Excel from './Excel';
+import Dashboard from './Dashboard';
 
 class App extends React.Component {
   constructor(props) {
@@ -22,8 +22,8 @@ class App extends React.Component {
           <Route path="/members">
             <Member />
           </Route>
-          <Route path="/excel">
-            <Excel />
+          <Route path="/dashboard">
+            <Dashboard />
           </Route>
           <Route>
             <Redirect to='/' />
