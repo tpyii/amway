@@ -165,7 +165,7 @@ function Message({id}) {
       <p>Вы зарегистрированы!<br/>
         Ваш номер Куратора {id}.</p>
       <p>Ссылка для добавление участников:<br/>
-      <a href="promo.nutrilitebodydetox.ru/members">promo.nutrilitebodydetox.ru/members</a></p>
+      <a href="/members">promo.nutrilitebodydetox.ru/members</a></p>
       <p>На Вашу почту отправлен номер Куратора и ссылка на регистрацию участников.</p>
     </>
   )
