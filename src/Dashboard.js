@@ -165,15 +165,12 @@ class Dashboard extends React.Component {
 
   hundleOnSubmitMember = event => {
     event.preventDefault();
-    const body = this.state.modalMemberValues.type !== 'Незарегистрированный клиент' ? 
-                                                        this.state.modalMemberValues :
-                                                        {...this.state.modalMemberValues, number: ''}
     const options = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(this.state.modalMemberValues)
     }
 
     fetch('/v1/members', options)
